@@ -20,6 +20,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import android.content.Intent
 
 
 
@@ -28,9 +29,11 @@ class MainActivity : ComponentActivity() {
     private lateinit var startButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.decorView.setOnApplyWindowInsetsListener { view, insets ->
+            view.onApplyWindowInsets(insets)
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.start)
-        enableEdgeToEdge()
         startButton=findViewById(R.id.button)
         startButton.setOnClickListener {
             lifecycleScope.launch {
@@ -38,26 +41,19 @@ class MainActivity : ComponentActivity() {
                     val response = WeatherApi.service.getWeather(51.67, 39.18)
                     val weather = response.currentWeather
 
-                    if (weather != null) {
-                        val temperature = weather.temperature
-                        val windSpeed = weather.windSpeed
-                        val time = weather.time
-                        val weatherCode = weather.weatherCode
-
-                        // Для вывода в Log используйте Log.d
-                        Log.d("Weather", "Температура: $temperature")
-                        Log.d("Weather", "Скорость ветра: $windSpeed")
-                        Log.d("Weather", "Время: $time")
-                        Log.d("Weather", "Код погоды: $weatherCode")
-
-                        // Или для вывода в UI
-                        runOnUiThread {
-                            // Обновление UI элементов
-                        }
+                    val intent = Intent(this@MainActivity,
+                        WeatherActivity::class.java).apply {
+                        putExtra("temperature", weather.temperature)
+                        putExtra("windSpeed", weather.windSpeed)
+                        putExtra("time", weather.time)
+                        putExtra("weatherCode", weather.weatherCode)
                     }
+                    startActivity(intent)
+
                 } catch (e: Exception) {
                     Log.e("Weather", "Ошибка при получении погоды: ${e.message}", e)
                 }
+
             }
 
         }
@@ -65,12 +61,4 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 

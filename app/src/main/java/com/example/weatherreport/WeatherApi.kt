@@ -10,8 +10,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 
 object WeatherApi {
-    val logging = HttpLoggingInterceptor();
-    val level=HttpLoggingInterceptor.Level.BODY;
+    val logging = HttpLoggingInterceptor()
 
 
     private val moshi = Moshi.Builder()
